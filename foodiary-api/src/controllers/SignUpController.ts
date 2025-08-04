@@ -4,6 +4,7 @@ import { badRequest, conflit, created } from "../utils/http";
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
 import { usersTable } from '../db/schema';
+import { hash } from 'bcryptjs';
 
 const schema = z.object({
     goal: z.enum(['lose', 'maintain', 'gain']),
@@ -38,9 +39,12 @@ export class SignUpController {
             return conflit({ error: 'Email is already in use' })
         }
 
+        const hashedPassword = await hash(data.account.password, 10)
+
         const [user] = await db.insert(usersTable).values({
             ...data,
             ...data.account,
+            password: hashedPassword,
             calories: 0,
             carbohydrates: 0,
             fats: 0,
