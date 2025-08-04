@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { HttpRequest, HttpResponse } from "../types/Http";
-import { badRequest, created } from "../utils/http";
+import { badRequest, ok, unauthorized } from "../utils/http";
+import { db } from "../db";
+import { eq } from "drizzle-orm";
+import { usersTable } from "../db/schema";
+import { compare } from "bcryptjs";
 
 const schema = z.object({
     email: z.email(),
@@ -15,8 +19,21 @@ export class SignInController {
             return badRequest({ errors: error.issues })
         }
 
-        return created({
-            data
+        const user = await db.query.usersTable.findFirst({
+            columns: {
+                id: true,
+                email: true,
+                password: true
+            },
+            where: eq(usersTable.email, data.email)
+        })
+
+        if (!user || !(await compare(data.password, user.password))) {
+            return unauthorized({ error: 'Invalid credential' })
+        }
+
+        return ok({
+            user
         })
     }
 }
