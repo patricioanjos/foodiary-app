@@ -30,6 +30,7 @@ functions:
       - httpApi:
           path: /signin
           method: POST
+    timeout: 10
 
   signup:
     handler: src/functions/signup.handler
@@ -37,6 +38,7 @@ functions:
       - httpApi:
           path: /signup
           method: POST
+    timeout: 10
 
   me:
     handler: src/functions/me.handler
@@ -44,6 +46,7 @@ functions:
       - httpApi:
           path: /me
           method: GET
+    timeout: 10
 
   createMeal:
     handler: src/functions/createMeal.handler
@@ -51,4 +54,5 @@ functions:
       - httpApi:
           path: /meals
           method: POST
+    timeout: 10
 
