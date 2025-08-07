@@ -64,3 +64,11 @@ functions:
           method: GET
     timeout: 10
 
+  getMealById:
+    handler: src/functions/getMealById.handler
+    events:
+      - httpApi:
+          path: /meals/{mealId}
+          method: GET
+    timeout: 10
+
