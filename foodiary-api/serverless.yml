@@ -56,3 +56,11 @@ functions:
           method: POST
     timeout: 10
 
+  listMeals:
+    handler: src/functions/listMeals.handler
+    events:
+      - httpApi:
+          path: /meals
+          method: GET
+    timeout: 10
+
