@@ -23,6 +23,13 @@ build:
 package:
   individually: true
 
+resources:
+  Resources:
+    UploadsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: foodiary-ninja-uploads
+
 functions:
   signin:
     handler: src/functions/signin.handler
