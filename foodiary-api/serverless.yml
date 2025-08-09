@@ -39,6 +39,20 @@ resources:
       Properties:
         BucketName: foodiary-ninja-uploads
 
+    MealsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: meals-queue
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          maxReceiveCount: 2
+          deadLetterTargetArn: !GetAtt MealsDLQ.Arn
+
+    MealsDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: meals-queue-dlq
+
 functions:
   signin:
     handler: src/functions/signin.handler
@@ -88,12 +102,12 @@ functions:
           method: GET
     timeout: 10
 
-  fileIploadedEvent:
-    handler: src/functions/fileIploadedEvent.handler
+  fileUploadedEvent:
+    handler: src/functions/fileUploadedEvent.handler
     events:
       - s3:
           bucket: !Ref UploadsBucket
-          events: s3:ObjectCreated:Put
+          event: s3:ObjectCreated:Put
           existing: true
           forceDeploy: true
 
