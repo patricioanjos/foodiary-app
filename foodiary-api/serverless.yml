@@ -88,3 +88,12 @@ functions:
           method: GET
     timeout: 10
 
+  fileIploadedEvent:
+    handler: src/functions/fileIploadedEvent.handler
+    events:
+      - s3:
+          bucket: !Ref UploadsBucket
+          events: s3:ObjectCreated:Put
+          existing: true
+          forceDeploy: true
+
