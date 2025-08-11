@@ -1,25 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
-import {Bungee_400Regular, useFonts} from '@expo-google-fonts/bungee'
+import { View } from 'react-native';
+import { Bungee_400Regular, useFonts } from '@expo-google-fonts/bungee'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react';
 import './styles/global.css';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import HomeHeader from './components/HomeHeader';
 
 SplashScreen.preventAutoHideAsync()
 
 export default function App() {
-  const [loaded, error] = useFonts({Bungee_400Regular})
+  const [loaded, error] = useFonts({ Bungee_400Regular })
 
   useEffect(() => {
-    if(loaded || error) {
+    if (loaded || error) {
       SplashScreen.hideAsync()
     }
   }, [loaded, error])
 
   return (
-    <View className="flex-1 justify-center items-center">
-      <Text className="font-sans-regular">Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View className="flex-1">
+      <SafeAreaProvider>
+        <HomeHeader />
+      </SafeAreaProvider>
     </View>
   );
 }
