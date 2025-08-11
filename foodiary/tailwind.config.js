@@ -4,6 +4,9 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      fontFamily: {
+        'sans-regular': ['Bungee_400Regular']
+      },
       colors: {
         black: {
           DEFAULT: '#000',
