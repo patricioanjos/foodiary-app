@@ -1,9 +1,9 @@
-import { View } from "react-native";
+import { View } from "lucide-react-native";
 import HomeHeader from "../components/HomeHeader";
 import { MealsList } from "../components/MealsList";
 import { MealBottomBar } from "../components/MealBottomBar";
 
-export function Home() {
+export default function Page() {
     return (
         <View className="flex-1">
             <HomeHeader />
