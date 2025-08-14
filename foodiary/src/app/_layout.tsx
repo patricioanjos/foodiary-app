@@ -5,14 +5,30 @@ import { useEffect } from 'react';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import '../styles/global.css';
+import { AuthProvider } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 SplashScreen.preventAutoHideAsync()
 
-export default function RootLayout() {
+export default function Layout() {
+    return (
+        <SafeAreaProvider>
+            <AuthProvider>
+                <RootLayout />
+            </AuthProvider>
+        </SafeAreaProvider>
+    )
+}
+
+function RootLayout() {
     const [loaded, error] = useFonts({ Bungee_400Regular })
+    const { isLoggedIn, isLoading } = useAuth()
 
     useEffect(() => {
-        if (loaded || error) {
+        const isFontLoaded = loaded || error
+        const isUserLoaded = !isLoading
+
+        if (isFontLoaded && isUserLoaded) {
             SplashScreen.hideAsync()
         }
     }, [loaded, error])
@@ -21,19 +37,15 @@ export default function RootLayout() {
         return null
     }
 
-    const isLoggedIn = false
-
     return (
-        <SafeAreaProvider>
-            <Stack screenOptions={{ headerShown: false }} >
-                <Stack.Protected guard={isLoggedIn}>
-                    <Stack.Screen name="(private)" />
-                </Stack.Protected>
+        <Stack screenOptions={{ headerShown: false }} >
+            <Stack.Protected guard={isLoggedIn}>
+                <Stack.Screen name="(private)" />
+            </Stack.Protected>
 
-                <Stack.Protected guard={!isLoggedIn}>
-                    <Stack.Screen name="(public)" />
-                </Stack.Protected>
-            </Stack>
-        </SafeAreaProvider>
+            <Stack.Protected guard={!isLoggedIn}>
+                <Stack.Screen name="(public)" />
+            </Stack.Protected>
+        </Stack>
     )
 }
