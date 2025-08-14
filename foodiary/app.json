@@ -2,7 +2,6 @@
   "expo": {
     "name": "foodiary",
     "slug": "foodiary",
-    "scheme": "foodiary",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,8 +27,7 @@
     },
     "plugins": [
       "expo-font",
-      "expo-audio",
-      "expo-router"
+      "expo-audio"
     ]
   }
 }
