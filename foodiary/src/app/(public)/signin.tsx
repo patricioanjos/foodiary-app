@@ -22,11 +22,9 @@ export default function SignIn() {
         }
     })
 
-    function handleSubmit() {
-        form.handleSubmit((formData) => {
-            console.log(formData)
-        })
-    }
+    const handleSubmit = form.handleSubmit((formData) => {
+        console.log(formData)
+    })
 
     return (
         <AuthLayout icon="👤" title="Entre em sua conta" subtitle="Acesse sua conta para continuar">
