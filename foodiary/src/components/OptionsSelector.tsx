@@ -38,7 +38,7 @@ export function OptionsSelector({value, onChange, options}: IOptionsSelectorProp
                         </Text>
 
                         {option.description && (
-                            <Text className="text-am font-sans-regular text-gray-700">
+                            <Text className="text-sm font-sans-regular text-gray-700">
                                 {option.description}
                             </Text>
                         )}
