@@ -1,4 +1,3 @@
-import { Text } from "react-native";
 import { OptionsSelector } from "../OptionsSelector";
 import { Controller, useFormContext } from "react-hook-form";
 import { SignUpFormData } from "./signUpSchema";
