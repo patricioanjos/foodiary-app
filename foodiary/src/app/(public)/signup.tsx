@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AuthLayout } from "../../components/AuthLayout";
 import { GoalStep } from "../../components/SignUpSteps/GoalStep";
 import { GenderStep } from "../../components/SignUpSteps/GenderStep";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { Button } from "../../components/Button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react-native";
 import { FormProvider, useForm } from "react-hook-form";
@@ -14,9 +14,11 @@ import { HeightStep } from "../../components/SignUpSteps/HeightStep";
 import { WeightStep } from "../../components/SignUpSteps/WeightStep";
 import { ActivityLevelStep } from "../../components/SignUpSteps/AcitivityLevelStep";
 import { AccountStep } from "../../components/SignUpSteps/AccountStep";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function SignUp() {
     const [currentStepIndex, setCurrentStepIndex] = useState(0)
+    const { signUp } = useAuth()
 
     const form = useForm({
         resolver: zodResolver(signUpSchema)
@@ -80,6 +82,29 @@ export default function SignUp() {
         setCurrentStepIndex(prevState => prevState + 1)
     }
 
+    const handleSubmit = form.handleSubmit(async (formData) => {
+        try {
+            const [day, month, year] = formData.birthDate.split('/')
+
+            await signUp({
+                goal: formData.goal,
+                gender: formData.gender,
+                birthDate: `${year}-${month}-${day}`,
+                activityLevel: Number(formData.activityLevel),
+                height: Number(formData.height),
+                weight: Number(formData.weight),
+                account: {
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            Alert.alert('Erro ao criar conta')
+        }
+    })
+
     const currentStep = steps[currentStepIndex]
     const isLastStep = currentStepIndex === steps.length - 1
 
@@ -100,7 +125,7 @@ export default function SignUp() {
                     </Button>
 
                     {isLastStep ? (
-                        <Button className="flex-1">
+                        <Button className="flex-1" onPress={handleSubmit}>
                             Criar conta
                         </Button>
                     ) : (

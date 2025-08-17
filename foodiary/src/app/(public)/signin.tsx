@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { AuthLayout } from "../../components/AuthLayout";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "../../hooks/useAuth";
 
 const schema = z.object({
     email: z.email('Informe um email válido'),
@@ -22,8 +23,15 @@ export default function SignIn() {
         }
     })
 
-    const handleSubmit = form.handleSubmit((formData) => {
-        console.log(formData)
+    const { signIn } = useAuth()
+
+    const handleSubmit = form.handleSubmit(async (formData) => {
+        try {
+            await signIn(formData)
+        } catch (error) {
+            console.log(error)
+            Alert.alert('Credenciais inválidas')
+        }
     })
 
     return (
