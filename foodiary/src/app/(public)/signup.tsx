@@ -15,6 +15,7 @@ import { WeightStep } from "../../components/SignUpSteps/WeightStep";
 import { ActivityLevelStep } from "../../components/SignUpSteps/AcitivityLevelStep";
 import { AccountStep } from "../../components/SignUpSteps/AccountStep";
 import { useAuth } from "../../hooks/useAuth";
+import { isAxiosError } from "axios";
 
 export default function SignUp() {
     const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -125,7 +126,7 @@ export default function SignUp() {
                     </Button>
 
                     {isLastStep ? (
-                        <Button className="flex-1" onPress={handleSubmit}>
+                        <Button className="flex-1" onPress={handleSubmit} loading={form.formState.isSubmitting}>
                             Criar conta
                         </Button>
                     ) : (

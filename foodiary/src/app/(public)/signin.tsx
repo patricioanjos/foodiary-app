@@ -77,7 +77,7 @@ export default function SignIn() {
                     <Button size="icon" color="gray" onPress={router.back}>
                         <ArrowLeftIcon size={20} color={"#18181B"} />
                     </Button>
-                    <Button className="flex-1" onPress={handleSubmit}>
+                    <Button className="flex-1" onPress={handleSubmit} loading={form.formState.isSubmitting}>
                         Entrar
                     </Button>
                 </View>

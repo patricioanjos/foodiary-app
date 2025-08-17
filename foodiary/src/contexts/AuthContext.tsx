@@ -1,4 +1,6 @@
-import { createContext, useCallback } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { createContext } from "react"
+import { httpClient } from "../services/httpClient"
 
 interface IAuthContextValue {
     isLoggedIn: boolean
@@ -29,13 +31,19 @@ type SignUpParams = {
 export const AuthContext = createContext({} as IAuthContextValue)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const signIn = useCallback(async (params: SignInParams) => {
-        console.log(params)
-    }, [])
+    const { mutateAsync: signIn } = useMutation({
+        mutationFn: async (params: SignInParams) => {
+            const { data } = await httpClient.post('/signin', params)
+            console.log(data)
+        }
+    })
 
-    const signUp = useCallback(async (params: SignUpParams) => {
-        console.log(params)
-    }, [])
+    const { mutateAsync: signUp } = useMutation({
+        mutationFn: async (params: SignUpParams) => {
+            const { data } = await httpClient.post('/signup', params)
+            console.log(data)
+        }
+    })
 
     return (
         <AuthContext.Provider value={{
