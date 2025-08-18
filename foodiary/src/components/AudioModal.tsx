@@ -6,6 +6,9 @@ import { Button } from "./Button"
 import { CheckIcon, MicIcon, PauseIcon, PlayIcon, SquareIcon, Trash2Icon, XIcon } from "lucide-react-native"
 import { cn } from "../utils/cn"
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioPlayer, useAudioRecorder, useAudioRecorderState } from "expo-audio"
+import { useMutation } from "@tanstack/react-query"
+import { httpClient } from "../services/httpClient"
+import { useCreateMeal } from "../hooks/useCreateMeal"
 
 interface IAudioModalProps {
     open: boolean
@@ -18,6 +21,8 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY)
     const { isRecording } = useAudioRecorderState(audioRecorder)
     const player = useAudioPlayer(audioUri)
+
+    const { createMeal } = useCreateMeal('audio/m4a')
 
     useEffect(() => {
         (async () => {
@@ -130,7 +135,7 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
                                     </Button>
                                 )}
 
-                                <Button size="icon">
+                                <Button size="icon" onPress={() => createMeal(audioUri)}>
                                     <CheckIcon size={20} color={'#71717A'} />
                                 </Button>
                             </View>
