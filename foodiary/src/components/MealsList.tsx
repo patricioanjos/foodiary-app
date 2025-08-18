@@ -4,25 +4,8 @@ import { DateSwitcher } from "./DateSwitcher";
 import { DailyStats } from "./DailyStats";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../hooks/useAuth";
-
-const meals = [
-    {
-        id: String(Math.random()),
-        name: 'Café da manhã'
-    },
-    {
-        id: String(Math.random()),
-        name: 'Almoço'
-    },
-    {
-        id: String(Math.random()),
-        name: 'Café da Tarde'
-    },
-    {
-        id: String(Math.random()),
-        name: 'Janta'
-    }
-]
+import { useQuery } from "@tanstack/react-query";
+import { httpClient } from "../services/httpClient";
 
 function MealsListHeader() {
     const { user } = useAuth()
@@ -54,8 +37,36 @@ function Separator() {
     )
 }
 
+type Meals = {
+    id: string
+    name: string
+    icon: string
+    foods: {
+        name: string
+        quantity: string
+        calories: number
+        proteins: number
+        carbohydrates: number
+        fats: number
+    }[]
+    createdAt: string
+}
+
 export function MealsList() {
     const { bottom } = useSafeAreaInsets()
+
+    const {data: meals} = useQuery({
+        queryKey: ['meals'],
+        queryFn: async () => {
+            const {data} = await httpClient.get<{meals: Meals[]}>('/meals', {
+                params: {
+                    date: '2025-08-18'
+                }
+            })
+
+            return data.meals
+        }
+    })
 
     return (
         <FlatList
@@ -63,6 +74,7 @@ export function MealsList() {
             keyExtractor={meal => meal.id}
             ListHeaderComponent={MealsListHeader}
             ItemSeparatorComponent={Separator}
+            ListEmptyComponent={<Text>Nenhuma refeição cadastrada</Text>}
             contentContainerStyle={{ paddingBottom: bottom }}
             renderItem={({ item }) => (
                 <View className="mx-5">
