@@ -1,9 +1,10 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { createContext, useCallback, useEffect, useState } from "react"
 import { httpClient } from "../services/httpClient"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface IAuthContextValue {
+    user: User | null
     isLoggedIn: boolean
     isLoading: boolean
     signIn(params: SignInParams): Promise<void>
@@ -30,6 +31,16 @@ type SignUpParams = {
     }
 }
 
+type User = {
+    id: string
+    name: string
+    email: string
+    calories: number
+    proteins: number
+    carbohydrates: number
+    fats: number
+}
+
 export const AuthContext = createContext({} as IAuthContextValue)
 
 const TOKEN_STORAGE_KEY = 'ninja'
@@ -51,9 +62,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         async function run() {
             if (!token) {
+                httpClient.defaults.headers.common['Authorization'] = null
                 return
             }
 
+            httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
             await AsyncStorage.setItem(TOKEN_STORAGE_KEY, token)
         }
 
@@ -74,14 +87,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     })
 
-    const signOut = useCallback(async function() {
+    const { data: user, isFetching } = useQuery({
+        enabled: !!token,
+        queryKey: ['user'],
+        queryFn: async () => {
+            const { data } = await httpClient.get<{ user: User }>('/me')
+            const { user } = data
+
+            return user
+        }
+    })
+
+    const signOut = useCallback(async function () {
         setToken(null)
         await AsyncStorage.removeItem(TOKEN_STORAGE_KEY)
     }, [])
 
     return (
         <AuthContext.Provider value={{
-            isLoggedIn: !!token, isLoading: isLoadingToken, signIn, signUp, signOut
+            isLoggedIn: !!user, 
+            isLoading: isLoadingToken || isFetching, 
+            user: user ?? null, 
+            signIn, 
+            signUp, 
+            signOut
         }}
         >
             {children}
