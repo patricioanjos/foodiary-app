@@ -6,6 +6,7 @@ import { Button } from "./Button"
 import { CameraIcon, CheckIcon, Trash2Icon, XIcon } from "lucide-react-native"
 import { CameraView, useCameraPermissions } from "expo-camera"
 import { useCreateMeal } from "../hooks/useCreateMeal"
+import { router } from "expo-router"
 
 interface ICameraModalProps {
     open: boolean
@@ -15,9 +16,15 @@ interface ICameraModalProps {
 export function CameraModal({ onClose, open }: ICameraModalProps) {
     const [photoUri, setPhotoUri] = useState<string | null>(null)
     const [permission, requestPermission] = useCameraPermissions()
-    
+
     const cameraRef = useRef<CameraView>(null)
-    const { createMeal, isLoading } = useCreateMeal('image/jpg')
+    const { createMeal, isLoading } = useCreateMeal({
+        fileType: 'image/jpg',
+        onSuccess: mealId => {
+            router.push(`/meals/${mealId}`)
+            handleCloseModal()
+        }
+    })
 
     async function handleTakePicture() {
         if (!cameraRef.current) {

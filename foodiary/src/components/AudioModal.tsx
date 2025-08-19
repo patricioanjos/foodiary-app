@@ -7,6 +7,7 @@ import { CheckIcon, MicIcon, PauseIcon, PlayIcon, SquareIcon, Trash2Icon, XIcon 
 import { cn } from "../utils/cn"
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioPlayer, useAudioRecorder, useAudioRecorderState } from "expo-audio"
 import { useCreateMeal } from "../hooks/useCreateMeal"
+import { router } from "expo-router"
 
 interface IAudioModalProps {
     open: boolean
@@ -20,7 +21,13 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
     const { isRecording } = useAudioRecorderState(audioRecorder)
     const player = useAudioPlayer(audioUri)
 
-    const { createMeal, isLoading } = useCreateMeal('audio/m4a')
+    const { createMeal, isLoading } = useCreateMeal({
+        fileType: 'audio/m4a',
+        onSuccess: mealId => {
+            router.push(`/meals/${mealId}`)
+            handleCloseModal()
+        }
+    })
 
     useEffect(() => {
         (async () => {
