@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { httpClient } from "../services/httpClient"
 
 export function useCreateMeal(fileType: 'audio/m4a' | 'image/jpg') {
-    const { mutateAsync: createMeal } = useMutation({
+    const { mutateAsync: createMeal, isPending } = useMutation({
         mutationFn: async (uri: string) => {
             const { data } = await httpClient.post('/meals', {
                 fileType
@@ -24,6 +24,7 @@ export function useCreateMeal(fileType: 'audio/m4a' | 'image/jpg') {
     })
 
     return {
-        createMeal
+        createMeal,
+        isLoading: isPending
     }
 }

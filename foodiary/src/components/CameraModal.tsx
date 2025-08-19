@@ -17,7 +17,7 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
     const [permission, requestPermission] = useCameraPermissions()
     
     const cameraRef = useRef<CameraView>(null)
-    const { createMeal } = useCreateMeal('image/jpg')
+    const { createMeal, isLoading } = useCreateMeal('image/jpg')
 
     async function handleTakePicture() {
         if (!cameraRef.current) {
@@ -101,7 +101,7 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
                                     <Button size="icon" color="dark" onPress={handleDeletePhoto}>
                                         <Trash2Icon size={20} color="#D9D9D9" />
                                     </Button>
-                                    <Button size="icon" onPress={() => createMeal(photoUri)}>
+                                    <Button size="icon" onPress={() => createMeal(photoUri)} loading={isLoading}>
                                         <CheckIcon size={20} color="#18181B" />
                                     </Button>
                                 </View>
