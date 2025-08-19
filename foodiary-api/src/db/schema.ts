@@ -18,7 +18,7 @@ export const usersTable = pgTable('users', {
     carbohydrates: integer().notNull(),
 })
 
-export const mealStatus = pgEnum('meal_status', ['uploading', 'success', 'failed', 'queued', 'processing'])
+export const mealStatus = pgEnum('meal_status', ['uploading', 'success', 'failed', 'processing'])
 export const mealInputType = pgEnum('meal_input_type', ['audio', 'picture'])
 
 export const mealsTable = pgTable('meals', {

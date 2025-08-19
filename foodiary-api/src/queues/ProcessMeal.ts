@@ -55,7 +55,7 @@ export class ProcessMeal {
                 foods: [
                     {
                         name: 'Pão com ovo',
-                        qauntity: '2 fatias de pão e 1 ovo',
+                        quantity: '2 fatias de pão e 1 ovo',
                         calories: 210,
                         proteins: 9.78,
                         carbohydrates: 29,
