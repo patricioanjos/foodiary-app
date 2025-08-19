@@ -21,14 +21,12 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
 
     async function handleTakePicture() {
         if (!cameraRef.current) {
-            console.log('camera nao') 
             return
         }
 
         const { uri } = await cameraRef.current.takePictureAsync({ imageType: 'jpg' })
 
         setPhotoUri(uri)
-        console.log(photoUri)
     }
 
     function handleCloseModal() {
@@ -77,7 +75,7 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
                             </View>
 
                             {!photoUri && (
-                                <CameraView style={{ flex: 1 }} />
+                                <CameraView style={{ flex: 1 }} ref={cameraRef} />
                             )}
 
                             {photoUri && (
@@ -103,7 +101,7 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
                                     <Button size="icon" color="dark" onPress={handleDeletePhoto}>
                                         <Trash2Icon size={20} color="#D9D9D9" />
                                     </Button>
-                                    <Button size="icon" color="dark" onPress={() => createMeal(photoUri)}>
+                                    <Button size="icon" onPress={() => createMeal(photoUri)}>
                                         <CheckIcon size={20} color="#18181B" />
                                     </Button>
                                 </View>
