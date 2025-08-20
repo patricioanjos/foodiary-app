@@ -6,26 +6,47 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "../services/httpClient";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
 
 interface IDateSwitcherProps {
     currentDate: Date
+    meals: Meal[]
     onPreviousDate(): void
     onNextDate(): void
 }
 
-function MealsListHeader({ currentDate, onPreviousDate, onNextDate }: IDateSwitcherProps) {
+function MealsListHeader({ currentDate, meals, onPreviousDate, onNextDate }: IDateSwitcherProps) {
     const { user } = useAuth()
+
+    const totals = useMemo(() => {
+        let calories = 0
+        let proteins = 0
+        let carbohydrates = 0
+        let fats = 0
+
+        for (const meal of meals) {
+            for (const food of meal.foods) {
+                calories += food.calories
+                proteins += food.proteins
+                carbohydrates += food.carbohydrates
+                fats += food.fats
+            }
+        }
+
+        return { calories, proteins, carbohydrates, fats }
+    }, [meals])
+
     return (
         <View>
             <DateSwitcher currentDate={currentDate} onPreviousDate={onPreviousDate} onNextDate={onNextDate} />
 
             <View className="mt-2">
                 <DailyStats
-                    calories={{ current: 0, goal: user!.calories }}
-                    proteins={{ current: 0, goal: user!.proteins }}
-                    carbohydrates={{ current: 0, goal: user!.carbohydrates }}
-                    fats={{ current: 0, goal: user!.fats }}
+                    calories={{ current: totals.calories, goal: user!.calories }}
+                    proteins={{ current: totals.proteins, goal: user!.proteins }}
+                    carbohydrates={{ current: totals.carbohydrates, goal: user!.carbohydrates }}
+                    fats={{ current: totals.fats, goal: user!.fats }}
                 />
             </View>
 
@@ -44,7 +65,7 @@ function Separator() {
     )
 }
 
-type Meals = {
+type Meal = {
     id: string
     name: string
     icon: string
@@ -71,11 +92,11 @@ export function MealsList() {
         return `${year}-${month}-${day}`
     }, [currentDate])
 
-    const { data: meals } = useQuery({
+    const { data: meals, refetch } = useQuery({
         queryKey: ['meals', dateParam],
         staleTime: 10_000,
         queryFn: async () => {
-            const { data } = await httpClient.get<{ meals: Meals[] }>('/meals', {
+            const { data } = await httpClient.get<{ meals: Meal[] }>('/meals', {
                 params: {
                     date: dateParam
                 }
@@ -84,6 +105,12 @@ export function MealsList() {
             return data.meals
         }
     })
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch()
+        }, [refetch])
+    )
 
     function handlePreviousDate() {
         setCurrentData(prevState => {
@@ -113,6 +140,7 @@ export function MealsList() {
             ListHeaderComponent={(
                 <MealsListHeader
                     currentDate={currentDate}
+                    meals={meals ?? []}
                     onPreviousDate={handlePreviousDate}
                     onNextDate={handleNextDate}
                 />
