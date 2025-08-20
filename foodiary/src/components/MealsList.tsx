@@ -122,6 +122,9 @@ export function MealsList() {
                     <MealCard
                         id={item.id}
                         name={item.name}
+                        icon={item.icon}
+                        foods={item.foods}
+                        createdAt={new Date(item.createdAt)}
                     />
                 </View>
             )}
