@@ -6,12 +6,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "../services/httpClient";
+import { useMemo, useState } from "react";
 
-function MealsListHeader() {
+interface IDateSwitcherProps {
+    currentDate: Date
+    onPreviousDate(): void
+    onNextDate(): void
+}
+
+function MealsListHeader({ currentDate, onPreviousDate, onNextDate }: IDateSwitcherProps) {
     const { user } = useAuth()
     return (
         <View>
-            <DateSwitcher />
+            <DateSwitcher currentDate={currentDate} onPreviousDate={onPreviousDate} onNextDate={onNextDate} />
 
             <View className="mt-2">
                 <DailyStats
@@ -54,13 +61,23 @@ type Meals = {
 
 export function MealsList() {
     const { bottom } = useSafeAreaInsets()
+    const [currentDate, setCurrentData] = useState(new Date())
 
-    const {data: meals} = useQuery({
-        queryKey: ['meals'],
+    const dateParam = useMemo(() => {
+        const year = currentDate.getFullYear()
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+        const day = String(currentDate.getDate()).padStart(2, '0')
+
+        return `${year}-${month}-${day}`
+    }, [currentDate])
+
+    const { data: meals } = useQuery({
+        queryKey: ['meals', dateParam],
+        staleTime: 10_000,
         queryFn: async () => {
-            const {data} = await httpClient.get<{meals: Meals[]}>('/meals', {
+            const { data } = await httpClient.get<{ meals: Meals[] }>('/meals', {
                 params: {
-                    date: '2025-08-19'
+                    date: dateParam
                 }
             })
 
@@ -68,14 +85,38 @@ export function MealsList() {
         }
     })
 
+    function handlePreviousDate() {
+        setCurrentData(prevState => {
+            const newDate = new Date(prevState)
+            newDate.setDate(newDate.getDate() - 1)
+
+            return newDate
+        })
+    }
+
+    function handleNextDate() {
+        setCurrentData(prevState => {
+            const newDate = new Date(prevState)
+            newDate.setDate(newDate.getDate() + 1)
+
+            return newDate
+        })
+    }
+
     return (
         <FlatList
             data={meals}
             keyExtractor={meal => meal.id}
-            ListHeaderComponent={MealsListHeader}
             ItemSeparatorComponent={Separator}
             ListEmptyComponent={<Text>Nenhuma refeição cadastrada</Text>}
             contentContainerStyle={{ paddingBottom: bottom }}
+            ListHeaderComponent={(
+                <MealsListHeader
+                    currentDate={currentDate}
+                    onPreviousDate={handlePreviousDate}
+                    onNextDate={handleNextDate}
+                />
+            )}
             renderItem={({ item }) => (
                 <View className="mx-5">
                     <MealCard
