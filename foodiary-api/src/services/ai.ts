@@ -7,7 +7,7 @@ export async function transcribeAudio(file: Buffer) {
         model: 'whisper-1',
         language: 'pt',
         response_format: 'text',
-        file: await toFile(file, 'audio', { type: 'audio/m4a' })
+        file: await toFile(file, 'audio.m4a', { type: 'audio/m4a' })
     })
 
     return transcription
