@@ -1,10 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { mealsTable } from "../db/schema";
-import { getMealDetailsFromText, transcribeAudio } from "../services/ai";
+import { getMealDetailsFromImage, getMealDetailsFromText, transcribeAudio } from "../services/ai";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../clients/s3Client";
 import { Readable } from "node:stream";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export class ProcessMeal {
     static async process({ fileKey }: { fileKey: string }) {
@@ -44,6 +45,19 @@ export class ProcessMeal {
                 console.log({ transcription })
             }
 
+            if (meal.inputFileKey === 'picture') {
+                const imageURL = await this.getImageURL(meal.inputFileKey)
+
+                const mealsDetails = await getMealDetailsFromImage({
+                    createdAt: meal.createdAt,
+                    imageURL
+                })
+
+                icon = mealsDetails.icon
+                name = mealsDetails.name
+                foods = mealsDetails.foods
+            }
+
             await db.update(mealsTable).set({
                 name,
                 status: 'success',
@@ -74,5 +88,14 @@ export class ProcessMeal {
         }
 
         return Buffer.concat(chunks)
+    }
+
+    private static async getImageURL(fileKey: string) {
+        const command = new GetObjectCommand({
+            Bucket: process.env.BUCKET_NAME,
+            Key: fileKey
+        })
+
+        return getSignedUrl(s3Client, command, { expiresIn: 600 })
     }
 }
