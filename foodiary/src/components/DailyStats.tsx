@@ -70,7 +70,7 @@ export function DailyStats({calories, proteins, carbohydrates, fats}: IGoalArcsP
 
                 <Arc
                     percentage={calcMacroPercentage(proteins)}
-                    color="#FF5736"
+                    color="#2A9D90"
                     radius={140}
                     strokeWidth={12}
                     className="absolute top-[20]"
