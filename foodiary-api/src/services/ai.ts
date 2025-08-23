@@ -1,4 +1,6 @@
 import OpenAI, { toFile } from "openai";
+import { MealData, mealSchema } from "../lib/zod/mealSchema";
+import z from "zod";
 
 const client = new OpenAI()
 
@@ -23,7 +25,7 @@ type GetMealDetailsFromImageParams = {
   createdAt: Date
 }
 
-export async function getMealDetailsFromText({ createdAt, text }: GetMealDetailsFromTextParams) {
+export async function getMealDetailsFromText({ createdAt, text }: GetMealDetailsFromTextParams): Promise<MealData> {
   const response = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
     messages: [
@@ -85,10 +87,24 @@ export async function getMealDetailsFromText({ createdAt, text }: GetMealDetails
     throw new Error('Failed to process meal.')
   }
 
-  return JSON.parse(json)
+  try {
+    const parsedJson = JSON.parse(json)
+
+    const validatedData = mealSchema.parse(parsedJson)
+
+    return validatedData
+  } catch (error) {
+    console.error('Falha na validação do Zod ou no parse do JSON:', error)
+    
+    if (error instanceof z.ZodError) {
+      console.error('Detalhes do erro do Zod:', error.issues)
+    }
+
+    throw new Error('A resposta da IA não está no formato JSON esperado.')
+  }
 }
 
-export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDetailsFromImageParams) {
+export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDetailsFromImageParams): Promise<MealData> {
   const response = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
     messages: [
@@ -157,5 +173,19 @@ export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDe
     throw new Error('Failed to process meal.')
   }
 
-  return JSON.parse(json)
+  try {
+    const parsedJson = JSON.parse(json)
+
+    const validatedData = mealSchema.parse(parsedJson)
+
+    return validatedData
+  } catch (error) {
+    console.error('Falha na validação do Zod ou no parse do JSON:', error)
+    
+    if (error instanceof z.ZodError) {
+      console.error('Detalhes do erro do Zod:', error.issues)
+    }
+
+    throw new Error('A resposta da IA não está no formato JSON esperado.')
+  }
 }
