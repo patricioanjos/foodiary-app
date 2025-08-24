@@ -3,7 +3,7 @@ import { HttpResponse, ProtectedHttpRequest } from "../types/Http";
 import { badRequest, ok } from "../utils/http";
 import { db } from "../db";
 import { mealsTable } from "../db/schema";
-import { and, eq, gte, lte, ne } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 
 const schema = z.object({
     date: z.iso.date().transform(dateString => new Date(dateString))
@@ -31,7 +31,6 @@ export class ListMealsController {
             where: and(
                 eq(mealsTable.userId, userId),
                 eq(mealsTable.status, 'success'),
-                ne(mealsTable.foods, '[]'),
                 gte(mealsTable.createdAt, data.date),
                 lte(mealsTable.createdAt, endDate)
             )
