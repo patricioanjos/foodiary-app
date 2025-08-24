@@ -43,6 +43,48 @@ export default function MealsDetails() {
         },
     })
 
+    const calculateMacroTotals = () => {
+        let calories = 0
+        let proteins = 0
+        let carbohydrates = 0
+        let fats = 0
+
+        if (!meal) { return }
+
+        for (const food of meal.foods) {
+            calories += food.calories
+            proteins += food.proteins
+            carbohydrates += food.carbohydrates
+            fats += food.fats
+        }
+
+        return { calories, proteins, carbohydrates, fats }
+    }
+
+    const calculateMacroPercentage = () => {
+        const { proteins = 0, carbohydrates = 0, fats = 0 } = calculateMacroTotals() || {}
+
+        const totalGrams = proteins + carbohydrates + fats
+
+        if (totalGrams === 0) {
+            return {
+                proteins: 0,
+                carbohydrates: 0,
+                fats: 0
+            }
+        }
+
+        const proteinsPercent = (proteins / totalGrams) * 100
+        const carbohydratesPercent = (carbohydrates / totalGrams) * 100
+        const fatsPercent = (fats / totalGrams) * 100
+
+        return {
+            proteins: Math.round(proteinsPercent),
+            carbohydrates: Math.round(carbohydratesPercent),
+            fats: Math.round(fatsPercent)
+        }
+    }
+
     if (isFetching || meal?.status === 'uploading' || meal?.status === 'processing') {
         return (
             <View className="flex-1 justify-center items-center gap-12 bg-lime-700">
@@ -63,14 +105,14 @@ export default function MealsDetails() {
 
     return (
         <>
-            <View className="bg-lime-400 h-[120px]" >
+            <View className="bg-lime-400 h-[130px]" >
                 <SafeAreaView className="flex-row items-end justify-between h-full mx-2">
-                    <TouchableOpacity className="flex-row items-center gap-2" onPress={router.back}>
-                        <ChevronLeftIcon />
-                        <Text>Macros Totais</Text>
+                    <TouchableOpacity className="flex-row items-center gap-4" onPress={router.back}>
+                        <ChevronLeftIcon size={20} />
+                        <Text className="font-sans-regular text-sm">Macros Totais</Text>
                     </TouchableOpacity>
 
-                    <Text className="mr-2">Calorias: 500</Text>
+                    <Text className="mr-2 font-sans-regular text-sm">Calorias: {calculateMacroTotals()?.calories}Kcal</Text>
                 </SafeAreaView>
             </View>
 
@@ -79,19 +121,19 @@ export default function MealsDetails() {
                     <View>
                         <Text className="text-gray-700 font-sans-regular">Carboidrato</Text>
                         <Text className="text-support-yellow font-sans-regular text-center text-base">
-                            56g (49%)
+                            {calculateMacroTotals()?.carbohydrates}g ({calculateMacroPercentage().carbohydrates}%)
                         </Text>
                     </View>
                     <View>
                         <Text className="text-gray-700 font-sans-regular">Proteína</Text>
                         <Text className="text-support-teal font-sans-regular text-center text-base">
-                            29g (25%)
+                            {calculateMacroTotals()?.proteins}g ({calculateMacroPercentage().proteins}%)
                         </Text>
                     </View>
                     <View>
                         <Text className="text-gray-700 font-sans-regular">Gordura</Text>
                         <Text className="text-support-orange font-sans-regular text-center text-base">
-                            29g (25%)
+                            {calculateMacroTotals()?.fats}g ({calculateMacroPercentage().fats}%)
                         </Text>
                     </View>
                 </View>
