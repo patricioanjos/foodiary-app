@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "../../../services/httpClient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeftIcon } from "lucide-react-native";
+import { Button } from "../../../components/Button";
 
 type Meal = {
     id: string,
@@ -34,17 +35,28 @@ export default function MealsDetails() {
         },
 
         refetchInterval: (query) => {
-            if (query.state.data?.status !== 'success') {
-                return 2000
+            if (query.state.data?.status === 'success' || query.state.data?.status === 'failed') {
+                return false;
             }
-        }
+
+            return 2_000;
+        },
     })
 
-    if (isFetching || meal?.status !== 'success') {
+    if (isFetching || meal?.status === 'uploading' || meal?.status === 'processing') {
         return (
             <View className="flex-1 justify-center items-center gap-12 bg-lime-700">
                 <Text className="text-white font-sans-regular text-4xl">Foodiary</Text>
                 <ActivityIndicator color={"#FFF"} />
+            </View>
+        )
+    }
+
+    if (meal?.status === 'failed') {
+        return (
+            <View className="flex-1 justify-center items-center gap-2">
+                <Text>Erro ao processar refeição. Tente novamente</Text>
+                <Button onPress={router.back}>Voltar</Button>
             </View>
         )
     }
@@ -88,12 +100,12 @@ export default function MealsDetails() {
 
                 <View>
                     <Text className="font-sans-regular text-xl">
-                        {meal.name}
+                        {meal?.name}
                     </Text>
 
                     <Text className="text-gray-700 font-sans-regular mt-6">Itens</Text>
 
-                    {meal.foods.map(({ name, quantity }) => (
+                    {meal?.foods.map(({ name, quantity }) => (
                         <View key={name}>
                             <Text className="font-sans-regular">{quantity} {name}</Text>
                             <View className="h-px bg-gray-500 mt-1 mb-4" />
