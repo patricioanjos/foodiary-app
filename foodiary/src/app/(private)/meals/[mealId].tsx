@@ -119,21 +119,21 @@ export default function MealsDetails() {
             <SafeAreaView className="flex-1 mx-5">
                 <View className="flex-row justify-between w-full">
                     <View>
-                        <Text className="text-gray-700 font-sans-regular">Carboidrato</Text>
+                        <Text className="text-gray-700 font-sans-regular text-center">Carboidrato</Text>
                         <Text className="text-support-yellow font-sans-regular text-center text-base">
-                            {calculateMacroTotals()?.carbohydrates}g ({calculateMacroPercentage().carbohydrates}%)
+                            {calculateMacroTotals()?.carbohydrates.toFixed(1)}g ({calculateMacroPercentage().carbohydrates}%)
                         </Text>
                     </View>
                     <View>
-                        <Text className="text-gray-700 font-sans-regular">Proteína</Text>
+                        <Text className="text-gray-700 font-sans-regular text-center">Proteína</Text>
                         <Text className="text-support-teal font-sans-regular text-center text-base">
-                            {calculateMacroTotals()?.proteins}g ({calculateMacroPercentage().proteins}%)
+                            {calculateMacroTotals()?.proteins.toFixed(1)}g ({calculateMacroPercentage().proteins}%)
                         </Text>
                     </View>
                     <View>
-                        <Text className="text-gray-700 font-sans-regular">Gordura</Text>
+                        <Text className="text-gray-700 font-sans-regular text-center">Gordura</Text>
                         <Text className="text-support-orange font-sans-regular text-center text-base">
-                            {calculateMacroTotals()?.fats}g ({calculateMacroPercentage().fats}%)
+                            {calculateMacroTotals()?.fats.toFixed(1)}g ({calculateMacroPercentage().fats}%)
                         </Text>
                     </View>
                 </View>
