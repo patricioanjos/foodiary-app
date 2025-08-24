@@ -25,7 +25,7 @@ export function MealCard({ id, name, icon, createdAt, foods  }: IMealProps) {
                         <Text>{icon}</Text>
                     </View>
 
-                    <View>
+                    <View className="flex-1">
                         <Text className="font-sans-regular text-gray-700">{name}</Text>
                         <Text className="font-sans-regular text-black-700">
                             {foods.map(({name}) => name).join(', ')}
