@@ -27,7 +27,7 @@ export class ProcessMeal {
 
         try {
             let icon, name = ''
-            let foods = []
+            let foods: Array<Object> = []
 
             if (meal.inputType === 'audio') {
                 const audioFileBuffer = await this.downloadAudioFile(meal.inputFileKey)
