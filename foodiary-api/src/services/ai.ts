@@ -25,18 +25,38 @@ type GetMealDetailsFromImageParams = {
   createdAt: Date
 }
 
+function getMealNameByDate(date: Date): { name: string } {
+  const hour = date.getHours()
+
+  if (hour >= 5 && hour < 11) {
+    return { name: "Café da Manhã" }
+  }
+  if (hour >= 11 && hour < 15) {
+    return { name: "Almoço" }
+  }
+  if (hour >= 15 && hour < 18) {
+    return { name: "Lanche da tarde" }
+  }
+  if (hour >= 18 && hour < 23) {
+    return { name: "Jantar" }
+  }
+  return { name: "Ceia" }
+}
+
 export async function getMealDetailsFromText({ createdAt, text }: GetMealDetailsFromTextParams): Promise<MealData> {
+  const mealInfo = getMealNameByDate(createdAt);
+
   const response = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
     messages: [
       {
         role: 'system',
         content: `
-          Você é um nutricionista e está atendendo um de seus pacientes. Você deve responder para ele seguindo as instruções a baixo.
+          Você é um nutricionista e está atendendo um de seus pacientes. Você deve responder para ele seguindo as instruções abaixo.
 
           Seu papel é:
-          1. Dar um nome e escolher um emoji para a refeição baseado no horário dela.
-          2. Identificar os alimentos presentes na imagem.
+          1. Escolher um emoji para a refeição.
+          2. Identificar os alimentos no texto.
           3. Estimar, para cada alimento identificado:
             - Nome do alimento (em português)
             - Quantidade aproximada (em gramas ou unidades)
@@ -48,7 +68,6 @@ export async function getMealDetailsFromText({ createdAt, text }: GetMealDetails
           Seja direto, objetivo e evite explicações. Apenas retorne os dados em JSON no formato abaixo:
 
           {
-            "name": "Jantar",
             "icon": "🍗",
             "foods": [
               {
@@ -90,7 +109,13 @@ export async function getMealDetailsFromText({ createdAt, text }: GetMealDetails
   try {
     const parsedJson = JSON.parse(json)
 
-    const validatedData = mealSchema.parse(parsedJson)
+    const finalData = {
+      name: mealInfo.name,
+      icon: parsedJson.icon,
+      foods: parsedJson.foods,
+    };
+
+    const validatedData = mealSchema.parse(finalData)
 
     return validatedData
   } catch (error) {
@@ -105,6 +130,8 @@ export async function getMealDetailsFromText({ createdAt, text }: GetMealDetails
 }
 
 export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDetailsFromImageParams): Promise<MealData> {
+  const mealInfo = getMealNameByDate(createdAt);
+
   const response = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
     messages: [
@@ -117,7 +144,7 @@ export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDe
           foi tirada por um usuário com o objetivo de registrar sua refeição.
 
           Seu papel é:
-          1. Dar um nome e escolher um emoji para a refeição baseado no horário dela.
+          1. Escolher um emoji para a refeição.
           2. Identificar os alimentos presentes na imagem.
           3. Estimar, para cada alimento identificado:
             - Nome do alimento (em português)
@@ -132,7 +159,6 @@ export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDe
           comum. Seja direto, objetivo e evite explicações. Apenas retorne os dados em JSON no formato abaixo:
 
           {
-            "name": "Jantar",
             "icon": "🍗",
             "foods": [
               {
@@ -176,7 +202,13 @@ export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDe
   try {
     const parsedJson = JSON.parse(json)
 
-    const validatedData = mealSchema.parse(parsedJson)
+    const finalData = {
+      name: mealInfo.name,
+      icon: parsedJson.icon,
+      foods: parsedJson.foods,
+    };
+
+    const validatedData = mealSchema.parse(finalData)
 
     return validatedData
   } catch (error) {
