@@ -3,7 +3,7 @@ import { HttpResponse, ProtectedHttpRequest } from "../types/Http";
 import { badRequest, ok } from "../utils/http";
 import { db } from "../db";
 import { mealsTable } from "../db/schema";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const schema = z.object({
     date: z.iso.date({error: 'Invalid date format, use YYYY-MM-DD'})
