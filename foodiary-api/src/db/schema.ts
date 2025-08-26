@@ -32,5 +32,6 @@ export const mealsTable = pgTable('meals', {
     name: varchar({ length: 255 }).notNull(),
     icon: varchar({ length: 100 }).notNull(),
     foods: json(),
+    mealDate: date('meal_date').notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow()
 })

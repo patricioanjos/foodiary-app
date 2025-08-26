@@ -7,6 +7,7 @@ import { CameraIcon, CheckIcon, Trash2Icon, XIcon } from "lucide-react-native"
 import { CameraView, useCameraPermissions } from "expo-camera"
 import { useCreateMeal } from "../hooks/useCreateMeal"
 import { router } from "expo-router"
+import { getFullDateString } from "../utils/getFullDateString"
 
 interface ICameraModalProps {
     open: boolean
@@ -20,6 +21,7 @@ export function CameraModal({ onClose, open }: ICameraModalProps) {
     const cameraRef = useRef<CameraView>(null)
     const { createMeal, isLoading } = useCreateMeal({
         fileType: 'image/jpg',
+        date: getFullDateString(),
         onSuccess: mealId => {
             router.push(`/meals/${mealId}`)
             handleCloseModal()

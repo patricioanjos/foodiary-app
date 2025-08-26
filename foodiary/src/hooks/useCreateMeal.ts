@@ -3,14 +3,16 @@ import { httpClient } from "../services/httpClient"
 
 type CreateMealParams = {
     fileType: 'audio/m4a' | 'image/jpg'
+    date: string
     onSuccess(mealId: string): void
 }
 
-export function useCreateMeal({fileType, onSuccess}: CreateMealParams) {
+export function useCreateMeal({fileType, date, onSuccess}: CreateMealParams) {
     const { mutateAsync: createMeal, isPending } = useMutation({
         mutationFn: async (uri: string) => {
             const { data } = await httpClient.post('/meals', {
-                fileType
+                fileType,
+                date
             })
 
             const { uploadURL } = data

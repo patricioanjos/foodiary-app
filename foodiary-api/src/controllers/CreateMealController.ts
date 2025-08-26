@@ -9,7 +9,8 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { s3Client } from "../clients/s3Client";
 
 const schema = z.object({
-    fileType: z.enum(['audio/m4a', 'image/jpg'])
+    fileType: z.enum(['audio/m4a', 'image/jpg']),
+    date: z.iso.date()
 })
 
 export class CreateMealController {
@@ -38,6 +39,7 @@ export class CreateMealController {
             status: 'uploading',
             name: '',
             icon: '',
+            mealDate: data.date,
             foods: []
         }).returning({ id: mealsTable.id })
 

@@ -6,7 +6,7 @@ import { mealsTable } from "../db/schema";
 import { and, eq, gte, lte } from "drizzle-orm";
 
 const schema = z.object({
-    date: z.iso.date().transform(dateString => new Date(dateString))
+    date: z.iso.date({error: 'Invalid date format, use YYYY-MM-DD'})
 })
 
 export class ListMealsController {
@@ -31,8 +31,7 @@ export class ListMealsController {
             where: and(
                 eq(mealsTable.userId, userId),
                 eq(mealsTable.status, 'success'),
-                gte(mealsTable.createdAt, data.date),
-                lte(mealsTable.createdAt, endDate)
+                eq(mealsTable.mealDate, data.date)
             )
         })
 

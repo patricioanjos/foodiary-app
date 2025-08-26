@@ -8,6 +8,7 @@ import { cn } from "../utils/cn"
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioPlayer, useAudioRecorder, useAudioRecorderState } from "expo-audio"
 import { useCreateMeal } from "../hooks/useCreateMeal"
 import { router } from "expo-router"
+import { getFullDateString } from "../utils/getFullDateString"
 
 interface IAudioModalProps {
     open: boolean
@@ -23,6 +24,7 @@ export function AudioModal({ onClose, open }: IAudioModalProps) {
 
     const { createMeal, isLoading } = useCreateMeal({
         fileType: 'audio/m4a',
+        date: getFullDateString(),
         onSuccess: mealId => {
             router.push(`/meals/${mealId}`)
             handleCloseModal()
