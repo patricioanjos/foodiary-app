@@ -10,7 +10,8 @@ import { s3Client } from "../clients/s3Client";
 
 const schema = z.object({
     fileType: z.enum(['audio/m4a', 'image/jpg']),
-    date: z.iso.date()
+    date: z.iso.date(),
+    timeZone: z.string()
 })
 
 export class CreateMealController {
@@ -40,6 +41,7 @@ export class CreateMealController {
             name: '',
             icon: '',
             mealDate: data.date,
+            timeZone: data.timeZone,
             foods: []
         }).returning({ id: mealsTable.id })
 

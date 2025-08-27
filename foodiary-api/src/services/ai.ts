@@ -1,6 +1,7 @@
 import OpenAI, { toFile } from "openai";
 import { MealData, mealSchema } from "../lib/zod/mealSchema";
 import z from "zod";
+import { toZonedTime } from "date-fns-tz";
 
 const client = new OpenAI()
 
@@ -18,18 +19,25 @@ export async function transcribeAudio(file: Buffer) {
 type GetMealDetailsFromTextParams = {
   text: string
   createdAt: Date
+  timeZone: string
 }
 
 type GetMealDetailsFromImageParams = {
   imageURL: string
   createdAt: Date
+  timeZone: string
 }
 
-function getMealNameByDate(date: Date): { name: string } {
-  const hour = date.getHours()
+function getMealNameByDate(date: Date, timeZone: string): { name: string } {
+  const zonedDate = toZonedTime(date, timeZone)
 
-  if (hour >= 5 && hour < 11) {
+  const hour = zonedDate.getHours();
+
+  if (hour >= 5 && hour <= 9) {
     return { name: "Café da Manhã" }
+  }
+  if (hour > 9 && hour < 11) {
+    return { name: "Lanche da tarde" }
   }
   if (hour >= 11 && hour < 15) {
     return { name: "Almoço" }
@@ -43,8 +51,10 @@ function getMealNameByDate(date: Date): { name: string } {
   return { name: "Ceia" }
 }
 
-export async function getMealDetailsFromText({ createdAt, text }: GetMealDetailsFromTextParams): Promise<MealData> {
-  const mealInfo = getMealNameByDate(createdAt);
+export async function getMealDetailsFromText({ createdAt, text, timeZone }: GetMealDetailsFromTextParams): Promise<MealData> {
+  const userTimeZone = timeZone || 'UTC';
+
+  const mealInfo = getMealNameByDate(createdAt, userTimeZone)
 
   const response = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
@@ -129,8 +139,10 @@ export async function getMealDetailsFromText({ createdAt, text }: GetMealDetails
   }
 }
 
-export async function getMealDetailsFromImage({ imageURL, createdAt }: GetMealDetailsFromImageParams): Promise<MealData> {
-  const mealInfo = getMealNameByDate(createdAt);
+export async function getMealDetailsFromImage({ imageURL, createdAt, timeZone }: GetMealDetailsFromImageParams): Promise<MealData> {
+  const userTimeZone = timeZone || 'UTC';
+
+  const mealInfo = getMealNameByDate(createdAt, userTimeZone)
 
   const response = await client.chat.completions.create({
     model: 'gpt-4.1-mini',

@@ -12,7 +12,8 @@ export function useCreateMeal({fileType, date, onSuccess}: CreateMealParams) {
         mutationFn: async (uri: string) => {
             const { data } = await httpClient.post('/meals', {
                 fileType,
-                date
+                date,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
             })
 
             const { uploadURL } = data

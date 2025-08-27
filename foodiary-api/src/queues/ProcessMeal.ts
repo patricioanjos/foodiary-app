@@ -35,7 +35,8 @@ export class ProcessMeal {
 
                 const mealsDetails = await getMealDetailsFromText({
                     createdAt: meal.createdAt,
-                    text: transcription
+                    text: transcription,
+                    timeZone: meal.timeZone
                 })
 
                 icon = mealsDetails.icon
@@ -50,7 +51,8 @@ export class ProcessMeal {
 
                 const mealsDetails = await getMealDetailsFromImage({
                     createdAt: meal.createdAt,
-                    imageURL
+                    imageURL,
+                    timeZone: meal.timeZone
                 })
 
                 icon = mealsDetails.icon

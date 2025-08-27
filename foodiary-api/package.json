@@ -26,9 +26,11 @@
     "@aws-sdk/s3-request-presigner": "^3.864.0",
     "@neondatabase/serverless": "^1.0.1",
     "bcryptjs": "^3.0.2",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "drizzle-orm": "^0.44.4",
     "jsonwebtoken": "^9.0.2",
-    "openai": "^5.12.2",
-    "zod": "^4.0.14"
+    "openai": "^5.16.0",
+    "zod": "^4.1.4"
   }
 }

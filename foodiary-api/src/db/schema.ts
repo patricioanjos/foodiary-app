@@ -1,4 +1,4 @@
-import { date, integer, json, pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { date, integer, json, pgEnum, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable('users', {
     id: uuid().primaryKey().defaultRandom(),
@@ -33,5 +33,6 @@ export const mealsTable = pgTable('meals', {
     icon: varchar({ length: 100 }).notNull(),
     foods: json(),
     mealDate: date('meal_date').notNull(),
+    timeZone: text('time_zone').notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow()
 })
